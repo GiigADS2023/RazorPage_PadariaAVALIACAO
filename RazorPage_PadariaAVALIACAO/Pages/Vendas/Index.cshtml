@@ -1,0 +1,31 @@
+﻿@page
+@model RazorPage_PadariaAVALIACAO.Pages.Vendas.IndexModel
+@{
+    ViewData["Title"] = "Venda";
+}
+
+<h2>Realizar Venda</h2>
+
+<form method="post">
+    <h4>Selecione os Produtos:</h4>
+    @foreach (var produto in Model.ProdutosDisponiveis)
+    {
+        <div>
+            <input type="checkbox" name="selectedProducts" value="@produto.Id" />
+            <label>@produto.Nome - R$ @produto.Preco</label>
+        </div>
+    }
+
+    <h4>Informe a forma de pagamento:</h4>
+    <select name="formaPagamento">
+        <option value="1">Dinheiro</option>
+        <option value="2">Cartão</option>
+        <option value="3">Pix</option>
+    </select>
+
+    <h4>Informe o nome do cliente (opcional):</h4>
+    <input type="text" name="nomeCliente" />
+
+    <br /><br />
+    <button type="submit">Finalizar Venda</button>
+</form>

@@ -1,0 +1,43 @@
+﻿@page
+@model RazorPage_PadariaAVALIACAO.Pages.ItensVenda.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>ItemVenda</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ItemVenda.VendaId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ItemVenda.VendaId)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ItemVenda.Quantidade)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ItemVenda.Quantidade)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ItemVenda.ValorTotal)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ItemVenda.ValorTotal)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ItemVenda.Produto)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ItemVenda.Produto.Id)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.ItemVenda.Id">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>
