@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using RazorPage_PadariaAVALIACAO.Models;
-using RazorPage_PadariaAVALIACAO.Data;
 using RazorPage_PadariaAVALIACAO.Services;
+using RazorPage_PadariaAVALIACAO.Data;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -39,44 +39,63 @@ namespace RazorPage_PadariaAVALIACAO.Pages.Vendas
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int[] selectedProducts, string formaPagamento, string nomeCliente)
+        public async Task<IActionResult> OnPostAsync(int[] selectedProducts, int[] quantidades, string formaPagamento, string nomeCliente)
         {
-            if (selectedProducts.Length == 0 || string.IsNullOrEmpty(formaPagamento))
+            // Check if products and payment method are selected
+            if (selectedProducts.Length == 0 || string.IsNullOrEmpty(formaPagamento) || selectedProducts.Length != quantidades.Length)
             {
-                ModelState.AddModelError(string.Empty, "Selecione produtos e informe a forma de pagamento.");
+                ModelState.AddModelError(string.Empty, "Selecione produtos e informe a forma de pagamento. As quantidades devem corresponder aos produtos.");
                 ProdutosDisponiveis = await _context.Produto.ToListAsync();
                 return Page();
             }
 
-            foreach (var produtoId in selectedProducts)
+            ItensVenda = new List<ItemVenda>();
+
+            for (int i = 0; i < selectedProducts.Length; i++)
             {
+                var produtoId = selectedProducts[i];
+                var quantidade = quantidades[i];
+
+
                 var produto = await _context.Produto.FindAsync(produtoId);
-                if (produto != null)
+                if (produto != null && quantidade > 0)
                 {
-                    var itemVenda = new ItemVenda(produto, 1);
+
+                    var itemVenda = new ItemVenda(produto, quantidade);
                     ItensVenda.Add(itemVenda);
                 }
             }
 
             Cliente = await _context.Cliente.FirstOrDefaultAsync(c => c.Nome == nomeCliente);
 
+            /*
+            if (Cliente == null)
+            {
+                ModelState.AddModelError(string.Empty, "Usuário não encontrado. Você será redirecionado para a tela de cadastro.");
+                return RedirectToPage("/Clientes/Create", new { nome = nomeCliente });
+            }
+            */
+
             var venda = new Venda(ItensVenda, formaPagamento, Cliente);
             Total = venda.Total;
 
-            // Save the sale to the database
+
             var novaVenda = new Models.Venda
             {
                 FormaPagamento = formaPagamento,
                 Cliente = Cliente,
                 ItensVenda = ItensVenda
             };
+
             _context.Venda.Add(novaVenda);
             await _context.SaveChangesAsync();
 
-            // Update customer loyalty points
+
             _vendaService.AtualizarPontosFidelidade(Cliente, ItensVenda);
 
             return RedirectToPage("Confirmacao", new { vendaId = novaVenda.Id });
         }
+
+
     }
 }
